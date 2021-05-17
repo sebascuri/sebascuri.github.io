@@ -73,6 +73,9 @@ In the next subsection, I will explain how we do the model-learning procedure, a
 
 ### Model Learning
 
+RH-UCRL is agnostic to the model one decides to use, as long as it is able to distinguish between epistemic and aleatoric uncertainty. In this work, we decided to use probabilistic ensembles of neural networks as in PETS and H-UCRL. 
+
+
 ### Policy Optimization
 
 
