@@ -5,9 +5,13 @@ categories: [Reinforcement Learning]
 header-includes: |
    - \usepackage{mathtools}
    - \usepackage{amsmath}
+scholar:
+    bibliography: rhucrl.bib
 ---
 
+This is a post for the paper {% cite curi2021RHUCRL %} that will appear in 2021 ICML. 
 ## Introduction
+
 
 In this work, we address the challenge of finding a robust policy in continuous control tasks.
 As a motivating example, consider designing a braking system on an autonomous car. 
@@ -24,8 +28,8 @@ By ensuring good performance with respect to the **worst-case** laden weight tha
 
 The main algorithmic procedure is to train our agent together with a ficticious adversary that simulates the real-world conditions we want to be robust to.
 The key question we ask is **how to train these agents in a data-efficient way**. 
-A common procedure is domain randomization, in which the adversary is simulated by sampling at random from a domain distribution. This has proved useful for sim2real applications, but it has the drawback that it requires many samples from the domain, as easy samples are treated equally than hard samples, and it scales poorly with the dimensionality of the domain.
-Another approach is RARL, in which the adversary and the learner are trained through greedy gradient descent, i.e., without any exploration. 
+A common procedure is domain randomization {% cite tobin2017DR %}, in which the adversary is simulated by sampling at random from a domain distribution. This has proved useful for sim2real applications, but it has the drawback that it requires many samples from the domain, as easy samples are treated equally than hard samples, and it scales poorly with the dimensionality of the domain.
+Another approach is RARL {% cite pinto2017RARL %}, in which the adversary and the learner are trained through greedy gradient descent, i.e., without any exploration. 
 Although it performs well in some tasks, we demonstrate that the lack of exploration, particularly by the adversary, yields poor performance. 
 
 
@@ -86,7 +90,7 @@ In particular, we build the set of all models that are **compatible** with the d
 The set is parameterized by $\beta_t$ and it scales the confidence bounds so that the true model $f$ is contained in $\mathcal{M}_t$ with high probability for every episode. 
 For some classes of models, such as GP models, there are closed form expressions for $\beta_t$. For deep neural networks, usually $\beta_t$ can be approximated via re-calibration. 
 
-In this work, we decided to use probabilistic ensembles of neural networks as in PETS and H-UCRL. 
+In this work, we decided to use probabilistic ensembles of neural networks as in PETS {% cite chua2018PETS %} and H-UCRL {% cite curi2020HUCRL %}. 
 We train each head of the ensemble using type-II MLE with one-step ahead transitions collected up to episode $t$; we then consider the model output as a mixture of Gaussians. Concretely, each head predicts a Gaussian $\mathcal{N}(\mu_{t-1}^{i}(\cdot), \omega_{t-1}^{i}(\cdot))$. We consider the mean prediction as $\mu_{t-1}(\cdot) = \frac{1}{N} \sum_{i=1}^N \mu_{t-1}^{i}(\cdot)$, the epistemic uncertainty as $\Sigma_{t-1}(\cdot) = \frac{1}{N-1} \sum_{i=1}^N (\mu_{t-1}(\cdot) - \mu_{t-1}^{i}(\cdot)) (\mu_{t-1}(\cdot) - \mu_{t-1}^{i}(\cdot))^\top$, and the aleatoric uncertainty as $\omega_{t-1}(\cdot) = \frac{1}{N} \sum_{i=1}^N \omega_{t-1}^{i}(\cdot)$. Here, $\cdot$ represents the states $s$, the agent actions $a$ and the adversary actions $\bar a$. 
 
 ### Policy Optimization
@@ -177,7 +181,7 @@ Getting back to the braking example, this setting can model, for example, differ
 We apply RH-UCRL in this setting by considering state-independent policies. 
 Thus, RH-UCRL selects the most optimistic robust agent policy as well as the most pessimistic laden weight.
 
-We consider Domain Randomization and EP-OPT as related baselines designed for this setting. 
+We consider Domain Randomization {% cite tobin2017DR %} and EP-OPT {% cite rajeswaran2016EPOPT %} as related baselines designed for this setting. 
 Domain Randomization is an algorithm that optimizes the expected performance for the agent, and for the adversary it randomizes the parameters that once wants to be robust to.
 The randomization happens at the beginning of each episode. 
 EP-OPT is a refinement of Domain Randomization and only optimizes the agent on data generated in the worst $\alpha$-percent of random episodes.
@@ -196,5 +200,20 @@ As a non-robust ablation, H-UCRL constantly has lower performance than RH-UCRL.
 Maximin-MF and Maximin-MB perform similarly in most environments, except in the hopper environment. 
 
 ### Adversarial Robust Reinforcement Learning
+
+The last experiment that we tried out RH-UCRL is in a truly adversarial RL setting, in which we first learn a policy and then we fix it and allow the adversary to train for this one policy. We call the performance of the policy in the presence of such adversary the **worst-case** return. Likewise, we call the performance of the policy without any adversary as the **average** return. This evaluation procedure is in contrast to what it is commonly done in the literature, in which an adversarial robust RL training procedure is employed, but only evaluated in the parameter-robust setting. 
+
+In the next figure we plot both metrics for the different algorithms previously discussed, as well as RARL {% cite pinto2017RARL %} and RAP {% cite vinitsky2020RAP %} baselines. 
+
+
+
 ![](../images/adversarial_robust_bar.png)
+
+We first see that all algorithms have lower worst-case than average performance. However, the decrease of RH-UCRL is the least in all benchmarks. Furthermore, RH-UCRL usually has the **highest** worst-case performance, and also reasonably good **average** performance. 
+
+## Bibliography
+
+
+{% bibliography --file rhucrl.bib %}
+
 
