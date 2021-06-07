@@ -1,10 +1,14 @@
 ---
 layout: page
-title: Getting started with Reverie
-permalink: /getting-started/
+title: How to update the webpage. 
+permalink: /how-to/
 ---
 
-### Step 1) Fork Reverie to your User Repository
+Usually, just pushing the master branch to the github.io is enough. 
+However, I use a webpage with some plug-ins that do not run on the github server. 
+Hence, I build the website locally on a different branch and the push the built website to the master branch. 
+
+### Step 1) Make sure you are on the source branch. 
 
 Fork [this repository](https://github.com/amitmerchant1990/reverie), then rename the repository to `yourgithubusername.github.io`.
 
