@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Combining Pessimism with Optimism for Robust and Efficient Model-Based Deep Reinforcement Learning
+title: How to explore to find a robust control policy?
 categories: [Reinforcement Learning]
 header-includes: |
    - \usepackage{mathtools}
@@ -9,7 +9,8 @@ scholar:
     bibliography: rhucrl.bib
 ---
 
-This is a post for the paper {% cite curi2021RHUCRL %} that will appear in 2021 ICML. 
+This is a post for the work *Combining Pessimism with Optimism for Robust and Efficient Model-Based Deep Reinforcement Learning* {% cite curi2021RHUCRL %}, jointly with Ilija Bogunovic and Andreas Krause, that will appear in ICML 2021. 
+
 ## Introduction
 
 
