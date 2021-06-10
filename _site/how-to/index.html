@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>How to update the webpage. – Sebastian Curi – A research and ideas blogspot.</title>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="How to update the webpage." />
+<meta name="author" content="Sebastian Curi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A research and ideas blogspot." />
+<meta property="og:description" content="A research and ideas blogspot." />
+<link rel="canonical" href="http://sebascuri.github.io/how-to/" />
+<meta property="og:url" content="http://sebascuri.github.io/how-to/" />
+<meta property="og:site_name" content="Sebastian Curi" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="How to update the webpage." />
+<script type="application/ld+json">
+{"description":"A research and ideas blogspot.","author":{"@type":"Person","name":"Sebastian Curi"},"url":"http://sebascuri.github.io/how-to/","headline":"How to update the webpage.","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+
+<meta property="og:description" content="A research and ideas blogspot." />
+
+<meta name="author" content="Sebastian Curi" />
+
+
+<meta property="og:title" content="How to update the webpage." />
+<meta property="twitter:title" content="How to update the webpage." />
+
+
+
+<meta property="og:image" content="http://sebascuri.github.io/images/ProfileCV.jpg"/>
+<meta property="twitter:image" content="http://sebascuri.github.io/images/ProfileCV.jpg"/>
+
+
+    
+    <link rel="stylesheet" type="text/css" href="/assets/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Sebastian Curi - A research and ideas blogspot." href="/feed.xml" />
+    <link rel="canonical" href="http://sebascuri.github.io/how-to/" />
+
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    
+
+  </head>
+
+  <body>
+    <div id="bar"></div>
+    <div class="wrapper-container">
+      <div class="wrapper-masthead">
+        <div class="container">
+          <header class="masthead clearfix">
+            <a href="/" class="site-avatar"><img src="/images/ProfileCV.jpg" alt="" /></a>
+
+            <div class="site-info">
+              <h1 class="site-name"><a href="/">Sebastian Curi</a></h1>
+              <p class="site-description">A research and ideas blogspot.</p> 
+            </div>
+
+            <nav>
+              <a href="/">Home</a>
+              <a href="/how-to">How to</a>
+              <a href="/search">Search</a>
+              <a href="/about-me">About Me</a>
+              <a href="/archive">Archive</a>
+            </nav>
+          </header>
+        </div>
+      </div>
+
+      <div class="wrapper-main">
+        <div id="main" role="main" class="container">
+          <article class="page">
+
+  <h1>How to update the webpage.</h1>
+
+  <div class="entry">
+    <p>Usually, just pushing the master branch to the github.io is enough. 
+However, I use a webpage with some plug-ins that do not run on the github server. 
+Hence, I build the website locally on a different branch and the push the built website to the master branch.</p>
+
+<h3 id="step-1-make-sure-you-are-on-the-source-branch">Step 1) Make sure you are on the source branch.</h3>
+
+<p>Clone <a href="https://github.com/sebascuri/sebascuri.github.io">this repository</a>.</p>
+
+<p>Checkout remote branch.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout <span class="nt">--track</span> origin/source
+</code></pre></div></div>
+
+<h3 id="step-2-build-webpage-and-check-that-it-works">Step 2) Build webpage and check that it works.</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll build 
+bundle <span class="nb">exec </span>jekyll serve  
+</code></pre></div></div>
+
+<h3 id="step-3-push-your-new-webpage">Step 3) Push your new webpage.</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git branch <span class="nt">-D</span> master
+git checkout <span class="nt">-b</span> master
+git filter-branch <span class="nt">--subdirectory-filter</span> _site/ <span class="nt">-f</span>
+git checkout <span class="nb">source
+</span>git add _site/ 
+git commit <span class="nt">-m</span> <span class="s2">"Add compiled site."</span>  <span class="c"># this is optional.</span>
+git push <span class="nt">--all</span> origin
+</code></pre></div></div>
+
+  </div>
+</article>
+
+        </div>
+      </div>
+
+      <div class="wrapper-footer">
+        <div class="container">
+          <footer class="footer">
+            
+<a href="mailto:sebascuri@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/sebascuri/sebascuri"><i class="svg-icon github"></i></a>
+
+
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/sebascuri"><i class="svg-icon twitter"></i></a>
+
+
+
+
+
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    
+
+  </body>
+</html>

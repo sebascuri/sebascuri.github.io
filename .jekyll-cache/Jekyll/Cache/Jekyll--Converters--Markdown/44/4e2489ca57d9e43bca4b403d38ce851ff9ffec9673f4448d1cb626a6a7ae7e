@@ -1,0 +1,205 @@
+I")J<p>This is a post for the work <em>Combining Pessimism with Optimism for Robust and Efficient Model-Based Deep Reinforcement Learning</em> <a class="citation" href="#curi2021RHUCRL">(Curi et al., 2021)</a>, jointly with Ilija Bogunovic and Andreas Krause, that will appear in ICML 2021.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In this work, we address the challenge of finding a robust policy in continuous control tasks.
+As a motivating example, consider designing a braking system on an autonomous car. 
+As this is a highly complex task, we want to learn a policy that performs this maneuver.
+One can imagine many real-world conditions and simulate them during training time e.g., road conditions, brightness, tire pressure, laden weight, or actuator wear. 
+However, it is unfeasible to simulate all such conditions and that might also vary in potentially unpredictable ways. 
+The main goal is to learn a policy that provably brakes in a robust fashion so that, even when faced with new conditions, it performs reliably.</p>
+
+<p>Of course, the first key challenge is to model the possible conditions the system might be in. 
+Inspired by \(\mathcal{H}_\infty\) control and Markov Games, we model unknown conditions with an adversary that interacts with the environment and the agent. 
+The adversary is allowed to execute adversarial actions at every instant by observing the current state and the history of the interaction. For example, if one wants to be robust to laden weight changes in the braking example, we allow the adversary to choose the laden weight. 
+By ensuring good performance with respect to the <strong>worst-case</strong> laden weight that an adversary selects, then we may also ensure good performance with respect to <strong>any other</strong> laden weight. Consequently, we say that <strong>such policy is robust</strong>.</p>
+
+<p>The main algorithmic procedure is to train our agent together with a fictitious adversary that simulates the real-world conditions we want to be robust to.
+The key question we ask is: <strong>How to train these agents in a data-efficient way?</strong>. 
+A common procedure is domain randomization <a class="citation" href="#tobin2017DR">(Tobin et al., 2017)</a>, in which the adversary is simulated by sampling at random from a domain distribution. This has proved useful for sim2real applications, but it has the drawback that it requires many domain-related samples, as easy samples are treated equally than hard samples, and it scales poorly with the dimensionality of the domain.
+Another approach is RARL <a class="citation" href="#pinto2017RARL">(Pinto et al., 2017)</a>, in which the adversary and the learner are trained with greedy gradient descent, i.e., without any exploration. 
+Although RARL performs well in some tasks, we demonstrate that the lack of exploration, particularly by the adversary, yields poor performance.</p>
+
+<h2 id="problem-setting">Problem Setting</h2>
+
+<p>In this section, we formalize the ideas from the introduction.</p>
+
+<p>We consider a stochastic environment with states $s$, agent actions $a$, adversary actions $\bar{a}$, and i.i.d. additive transition noise vector $\omega$. 
+The dynamics are given by:
+\begin{equation}
+    s_{h+1} = f(s_h, a_h, \bar{a}_h) + \omega_h
+\end{equation}
+We assume the true dynamics $f$ are <strong>unknown</strong> and consider the episodic setting over a finite time horizon $H$.
+After every episode (i.e., every $H$ time steps), the system is reset to a known state $s_0$.
+At every time-step, the system returns a reward $r(s_h, a_h, \bar{a}_h)$.
+We consider time-homogeneous agent policies $\pi$, that select actions according to $a_h = \pi(s_h)$, as well as adversary policies $\bar{\pi}$ with $\bar{a}_h = \bar{\pi}(s_h)$.</p>
+
+<p>We consider the performance of a pair of policies $(\pi, \bar{\pi})$ on a given dynamical system $\tilde{f}$ as the episodic expected sum of returns:
+ \(\begin{align}
+    J(\tilde{f}, \pi, \bar{\pi}) &amp;:= \mathbb{E}_{\tau_{\tilde{f}, \pi, \bar{\pi}}}{ \left[ \sum_{h=0}^{H} r(s_h, a_h, \bar{a}_h) \, \bigg| \, s_0 \right]}, \\
+    \text{s.t. }\;  s_{h+1}&amp; = \tilde{f}(s_h,  a_h, \bar{a}_h) + \omega_h, \nonumber
+\end{align}\)</p>
+
+<p>where $\tau_{\tilde{f},\pi,\bar{\pi}}$ is a random trajectory induced by the stochastic noise $\omega$, the dynamics $\tilde{f}$, and the policies $\pi$ and $\bar{\pi}$.</p>
+
+<p>We use $\pi^{\star}$ to denote the optimal robust policy from the set $\Pi$ on the true dynamics $f$, i.e.,
+\begin{equation}
+    \pi^\star \in \arg \max_{\pi \in \Pi} \min_{\bar{\pi} \in \bar\Pi} J(f, \pi, \bar\pi). \label{eq:objective}
+\end{equation}</p>
+
+<p>For a small fixed $\epsilon&gt;0$, the goal is to output a robust policy $\hat{\pi}_{T}$ after $T$ episodes such that:</p>
+
+\[\begin{align}
+    \min_{\bar{\pi} \in \bar{\Pi}} J(f, \pi_T, \bar{\pi}) \geq \min_{\bar{\pi} \in \bar{\Pi}} J(f, \pi^{\star}, \bar{\pi}) - \epsilon,
+\end{align}\]
+
+<p>Hence, we consider the task of near-optimal robust policy identification. Thus, the goal is to output the agent’s policy with near-optimal robust performance when facing its own <strong>worst-case</strong> adversary, and the adversary selects $\bar{\pi}$ <strong>after</strong> the agent selects $\pi_T$. 
+This is a stronger robustness notion than just considering the worst-case adversary of the optimal policy, since, by letting $\bar{\pi}^* \in  \arg \min_{\bar{\pi} \in \bar\Pi} J(f, \pi^{\star}, \bar\pi)$, we have $J(f, \pi_T, \bar\pi^*) \geq \min_{\bar\pi \in \bar\Pi} J(f, \pi_T, \bar\pi)$.</p>
+
+<h2 id="method-rh-ucrl">Method: RH-UCRL</h2>
+
+<p>In this section, we present our algorithm, RH-UCRL. It is a model-based algorithm that explicitly uses the <strong>epistemic uncertainty</strong> in the model to explore, both for the agent and for the adversary. 
+In the next subsection, we will explain how we do the model-learning procedure, and in the following one, the policy optimization.</p>
+
+<h3 id="model-learning">Model Learning</h3>
+
+<p>RH-UCRL is agnostic to the model one uses, as long as it is able to distinguish between epistemic and aleatoric uncertainty.
+In particular, we build the set of all models that are <strong>compatible</strong> with the data collected up to episode $t$. This set is defined as</p>
+
+\[\begin{align}
+\mathcal{M}_t = \{\tilde{f}(z) \: \text{s.t.} \forall z \in \mathcal{Z} \: \| \tilde{f} (z) -\mu_{t-1} (z) \|   \leq \beta_t \Sigma_{t-1}^{1/2}(z) \}, 
+\end{align}\]
+
+<p>where $\mu_{t-1}$ is a mean function and $\Sigma_{t-1}$ a covariance function, and $z = (s, a, a)$ and $\mathcal{Z} = \mathcal{S} \times \mathcal{A} \times \bar{\mathcal{A}}$.</p>
+
+<p>The set is parameterized by $\beta_t$ and it scales the confidence bounds so that the true model $f$ is contained in $\mathcal{M}_t$ with high probability for every episode. 
+For some classes of models, such as GP models, there are closed form expressions for $\beta_t$. For deep neural networks, usually $\beta_t$ can be approximated via re-calibration.</p>
+
+<p>In this work, we decided to use probabilistic ensembles of neural networks as in PETS <a class="citation" href="#chua2018PETS">(Chua et al., 2018)</a> and H-UCRL <a class="citation" href="#curi2020HUCRL">(Curi et al., 2020)</a>. 
+We train each head of the ensemble using type-II MLE with one-step ahead transitions collected up to episode $t$; we then consider the model output as a mixture of Gaussians. Concretely, each head predicts a Gaussian $\mathcal{N}(\mu_{t-1}^{i}(z), \omega_{t-1}^{i}(z))$. We consider the mean prediction as $\mu_{t-1}(z) = \frac{1}{N} \sum_{i=1}^N \mu_{t-1}^{i}(z)$, the epistemic uncertainty as $\Sigma_{t-1}(z) = \frac{1}{N-1} \sum_{i=1}^N (\mu_{t-1}(z) - \mu_{t-1}^{i}(z)) (\mu_{t-1}(z) - \mu_{t-1}^{i}(z))^\top$, and the aleatoric uncertainty as $\omega_{t-1}(z) = \frac{1}{N} \sum_{i=1}^N \omega_{t-1}^{i}(z)$.</p>
+
+<h3 id="policy-optimization">Policy Optimization</h3>
+
+<p>Given the set of plausible models, we are able to construct <strong>optimistic</strong> and <strong>pesimistic</strong> estimates of the performance of any given pair of policies by optimizing w.r.t. the dynamics $\tilde{f}\in \mathcal{M}_t$.
+Unfortunately, optimizing w.r.t. the dynamics is intractable, especially in non-linear models. 
+For the particular case of Gaussian models we use a variant of the reparameterization trick. In particular, we introduce a function $\eta(z): \mathcal{Z} \to [-1, 1]^{n}$ and re-write the set of plausible models as 
+\(\begin{align} \mathcal{M}_t = \{\tilde f (z) \; \text{  s.t.} \exists \eta,  \forall z \: \tilde{f} = \mu_{t-1}(z) + \beta_t \Sigma_{t-1}^{1/2}(z) \eta(z) \}.\end{align}\)</p>
+
+<p>The <strong>key</strong> observation is that optimizing over $\eta$ is easier than optimizing over $\tilde{f}$ as $\eta$ is a bounded Lipschitz function, whereas optimizing over $\tilde{f}$ in (5) requires solving a constrained optimization problem.</p>
+
+<h4 id="policy-evaluation">Policy Evaluation</h4>
+
+<p>For any two policies $\pi$ and $\bar\pi$, we denote the <strong>optimistic</strong> estimate as $J_t^{(o)}(\pi, \bar \pi)$ and the <strong>pesimistic</strong> estimate as  $J_t^{(p)}(\pi, \bar\pi)$.
+The optimistic estimate is given by:</p>
+
+<p>\begin{align}
+	J_t^{(o)} (\pi, \bar\pi) &amp;= \max_{\eta^o} J (f^{(o)}, \pi, \bar\pi) 
+    \; \text{s.t.} \; f^o(\cdot) = \mu_{t-1}(\cdot) + \beta_{t} \Sigma_{t-1}^{1/2}(\cdot) \eta^o (\cdot). \label{eq:optimistic_performance}
+\end{align}</p>
+
+<p>Likewise, the pessimistic estimate is:
+\begin{align}
+	J_t^{(p)} (\pi, \bar\pi) &amp;= \min_{\eta^p} J (f^{(p)}, \pi, \bar\pi) 
+    \; \text{s.t.} \; f^p(\cdot) = \mu_{t-1}(\cdot) + \beta_{t} \Sigma_{t-1}^{1/2}(\cdot) \eta^p (\cdot). \label{eq:pessimistic_performance}
+\end{align}</p>
+
+<p>Both (5) and (6) are non-linear finite-horizon optimal control problems, where the <em>hallucinated</em> controls are the function $\eta$ that we introduced, and these <em>hallucinated</em> controls act linearly on the dynamics.</p>
+
+<h4 id="rh-ucrl-algorithm">RH-UCRL Algorithm</h4>
+
+<p>The next step is to select the agent and adversary policies to deploy in the next episode. The R-HUCRL algorithm selects for the agent the policy that is <strong>most optimistic</strong> for any adversary policy, and for the adversary the policy that is <strong>most pessimistic</strong> for the selected agent policy. In equations, the algorithm is:</p>
+
+\[\begin{align}
+    \pi_t &amp;\in \arg\max_{\pi \in \Pi} \min_{\bar\pi \in \bar\Pi} J_{t}^{(o)}(\pi, \bar\pi), \label{eq:rhucrl:learner} \\
+    \bar\pi_t &amp;\in \arg\min_{\bar\pi \in \bar\Pi} J_{t}^{(p)}(\pi_t, \bar\pi) .  \label{eq:rhucrl:adversary}
+\end{align}\]
+
+<p>Finally, after $T$ episodes, the algorithm returns the agent policy that had the largest pessimistic performance throughout the training phase, 
+\(\begin{align}
+    \hat{\pi}_T = \pi_{t^\star}\; \text{ s.t. } \; t^\star \in \arg\max_{t \in \{1, \ldots, T\} } J_{t}^{(p)}(\pi_t, \bar\pi_t). \label{eq:rhucrl:output}
+\end{align}\)</p>
+
+<p>Note that this quantity is computed in (8) and thus the last step has no extra computational cost.</p>
+
+<h3 id="theory">Theory</h3>
+
+<p>The main theoretical contribution of our paper says that under some technical assumptions, and the number of episodes $T$ is large enough, i.e., when</p>
+
+\[\begin{align}
+    \frac{T}{\beta_{T}^{2H}\Gamma_{T}} \geq \frac{16L_r^2 H^3C^{2H}}{ \epsilon^2},
+\end{align}\]
+
+<p>then, the output $\hat{\pi}_T$ of RH-UCRL in (9) satisfies</p>
+
+\[\begin{align}
+    \min_{\bar\pi \in \bar \Pi} J(f, \hat{\pi}_T, \bar \pi) \geq \min_{\bar\pi \in \Pi} J(f, \pi^{\star}, \bar \pi) - \epsilon
+\end{align}\]
+
+<p>This is exactly the performance that we cared about in the problem setting in Equation (4). 
+So what are these terms in equation (10)? Will these condition ever hold?</p>
+
+<p>The terms $\beta_T$ and $\Gamma_T$ are model-dependent and these quantify how hard is to learn the model. For some GP kernels, like RBF kernels, these are poly-logarithmic in $T$. Thus, we expect that for these models and $T$ large enough, condition $T$ holds.
+There is an ugly exponential dependence in our analysis in the $C^{2H}$ term but we do not know yet how to get rid of it. However, we believe it is spurious to the analysis and it shouldn’t really be there.</p>
+
+<h2 id="applications">Applications</h2>
+
+<p>Finally, in the next subsections we show some application of the RH-UCRL algorithm. 
+As ablations, we propose some baselines derived from the algorithm:</p>
+
+<ul>
+  <li>
+    <p><strong>Best Response</strong>: we simply play the pair of policies $(\pi, \bar \pi)$ that optimize the optimistic performance, i.e., the solution to equation (7). This benchmark is intended to evaluate how does pessimism explores in the space of adversarial policies.</p>
+  </li>
+  <li>
+    <p><strong>MaxiMin-MB/MaxiMin-MF</strong>: we simply play the pair of policies $(\pi, \bar \pi)$ that optimize the <em>expected</em> performance, i.e., without hallucination. As we don’t explicitly use the epistemic uncertainty, we can do these either in a Model-Based or Model-Free way. This benchmark is intended to evaluate how does hallucination helps to explore and to verify if there are big differences between model-based and model-free implementations.</p>
+  </li>
+  <li>
+    <p><strong>H-UCRL</strong>: we execute such algorithm, i.e., without an adversary. This benchmark is intended to evaluate how a non-robust algorithm performs in such tasks.</p>
+  </li>
+</ul>
+
+<p>In the different applications, we also propose benchmarks that were specificly proposed for them and describe the evaluation procedure.</p>
+
+<h3 id="parameter-robust-reinforcement-learning">Parameter Robust Reinforcement Learning</h3>
+<p>This is possibly the most common application of robust reinforcement learning, in which the goal is to output a policy that has good performance uniformly over a set of parameters. 
+Getting back to the braking example, this setting can model, for example, different laden weights. 
+We apply RH-UCRL in this setting by considering state-independent policies. 
+Thus, RH-UCRL selects the most optimistic robust agent policy as well as the most pessimistic laden weight.</p>
+
+<p>We consider Domain Randomization <a class="citation" href="#tobin2017DR">(Tobin et al., 2017)</a> and EP-OPT <a class="citation" href="#rajeswaran2016EPOPT">(Rajeswaran et al., 2016)</a> as related baselines designed for this setting. 
+Domain Randomization is an algorithm that optimizes the expected performance for the agent, and for the adversary it randomizes the parameters that once wants to be robust to.
+The randomization happens at the beginning of each episode. 
+EP-OPT is a refinement of Domain Randomization and only optimizes the agent on data generated in the worst $\alpha$-percent of random episodes.</p>
+
+<p>Next, we show the results of our experiments by varying the mass of different Mujoco environments between 0.1 and 2 times the original mass.
+<img src="../images/parameter_robust.png" alt="" /></p>
+
+<p><strong>Baseline Comparison</strong>
+We see that the performance of RH-UCRL is more stable compared to the other benchmarks and it is usually above the other algorithms. For the Swimmer environment, EP-OPT performs better, but in most other environments, it fails compared to RH-UCRL.</p>
+
+<p><strong>Ablation Discussion</strong>
+In the inverted pendulum, best response has very bad performance for a wide range of parameters. This is because early in the training it learns that the hardest mass is the smallest one, and then always proposes this mass, and doesn’t learn the other masses. 
+As a non-robust ablation, H-UCRL constantly has lower performance than RH-UCRL.
+Maximin-MF and Maximin-MB perform similarly in most environments, except in the hopper environment.</p>
+
+<h3 id="adversarial-robust-reinforcement-learning">Adversarial Robust Reinforcement Learning</h3>
+
+<p>The last experiment that we tried out RH-UCRL is in a truly adversarial RL setting, in which we first learn a policy and then we fix it and allow the adversary to train for this one policy. We call the performance of the policy in the presence of such adversary the <strong>worst-case</strong> return. Likewise, we call the performance of the policy without any adversary as the <strong>average</strong> return. This evaluation procedure is in contrast to what it is commonly done in the literature, in which an adversarial robust RL training procedure is employed, but only evaluated in the parameter-robust setting.</p>
+
+<p>In the next figure we plot both metrics for the different algorithms previously discussed, as well as RARL <a class="citation" href="#pinto2017RARL">(Pinto et al., 2017)</a> and RAP <a class="citation" href="#vinitsky2020RAP">(Vinitsky et al., 2020)</a> baselines.</p>
+
+<p><img src="../images/adversarial_robust_bar.png" alt="" /></p>
+
+<p>We first see that all algorithms have lower worst-case than average performance. However, the decrease of RH-UCRL is the least in all benchmarks. Furthermore, RH-UCRL usually has the <strong>highest</strong> worst-case performance, and also reasonably good <strong>average</strong> performance.</p>
+
+<h2 id="bibliography">Bibliography</h2>
+
+<ol class="bibliography"><li><span id="chua2018PETS">Chua, K., Calandra, R., McAllister, R., &amp; Levine, S. (2018). Deep reinforcement learning in a handful of trials using probabilistic dynamics models. <i>Neural Information Processing Systems (NeurIPS)</i>, 4754–4765.</span></li>
+<li><span id="curi2020HUCRL">Curi, S., Berkenkamp, F., &amp; Krause, A. (2020). Efficient Model-Based Reinforcement Learning through Optimistic Policy Search and Planning. <i>Neural Information Processing Systems (NeurIPS)</i>, <i>33</i>.</span></li>
+<li><span id="pinto2017RARL">Pinto, L., Davidson, J., Sukthankar, R., &amp; Gupta, A. (2017). Robust adversarial reinforcement learning. <i>International Conference on Machine Learning</i>, 2817–2826.</span></li>
+<li><span id="vinitsky2020RAP">Vinitsky, E., Du, Y., Parvate, K., Jang, K., Abbeel, P., &amp; Bayen, A. (2020). Robust Reinforcement Learning using Adversarial Populations. <i>ArXiv Preprint ArXiv:2008.01825</i>.</span></li>
+<li><span id="tobin2017DR">Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., &amp; Abbeel, P. (2017). Domain randomization for transferring deep neural networks from simulation to the real world. <i>International Conference on Intelligent Robots and Systems (IROS)</i>, 23–30.</span></li>
+<li><span id="rajeswaran2016EPOPT">Rajeswaran, A., Ghotra, S., Ravindran, B., &amp; Levine, S. (2016). EPOpt: Learning Robust Neural Network Policies Using Model Ensembles. <i>International Conference on Learning Representations, (ICLR)</i>.</span></li>
+<li><span id="curi2021RHUCRL">Curi, S., Bogunovic, I., &amp; Krause, A. (2021). Combining Pessimism with Optimism for Robust and Efficient Model-Based Deep Reinforcement Learning. <i>International Conference on Machine Learning (ICML)</i>.</span></li></ol>
+
+:ET

@@ -1,0 +1,25 @@
+I"<p>Hi! 
+I’m Sebastian Curi, I’m a Ph.D. student at ETH Zurich, under the supervision of Andreas Krause. 
+Currently, I’m doing an internship at Google, under the supervision of Gabriel Dulac-Arnold and Marcin Andrychowicz. 
+Previously, I did a stay at Gergely’s Neu Lab in Universtat Pompeu Fabra.</p>
+
+<p>I’m interested in the intersection between theory and practice of Reinforcement Learning/Control Systems. In particular, I focus on how to bring these algorithms into practical methods. I also care about the robustness, safety, sample-efficiency, and risk-aversity (to name some aspects) of data-driven decision-making.</p>
+
+<h2 id="my-publications">My Publications</h2>
+
+<ol class="bibliography"><li><span id="curi2021RHUCRL">Curi, S., Bogunovic, I., &amp; Krause, A. (2021). Combining Pessimism with Optimism for Robust and Efficient Model-Based Deep Reinforcement Learning. <i>International Conference on Machine Learning (ICML)</i>.</span></li>
+<li><span id="treven2020learning">Treven, L., Curi, S., Mutny, M., &amp; Krause, A. (2021). Learning Controllers for Unstable Linear Quadratic Regulators from a Single Trajectory. <i>Learning for Dynamics and Control (L4DC)</i>.</span></li>
+<li><span id="serrano2021logistic">Serrano, J. B., Curi, S., Krause, A., &amp; Neu, G. (2021). Logistic Q-Learning. <i>International Conference on Artificial Intelligence and Statistics</i>, 3610–3618.</span></li>
+<li><span id="urpi2021riskaverse">Urpı́ Núria Armengol, Curi, S., &amp; Krause, A. (2021). Risk-Averse Offline Reinforcement Learning. <i>International Conference on Learning Representations</i>. https://openreview.net/forum?id=TBIzh9b5eaz</span></li>
+<li><span id="curi2020HUCRL">Curi, S., Berkenkamp, F., &amp; Krause, A. (2020). Efficient Model-Based Reinforcement Learning through Optimistic Policy Search and Planning. <i>Neural Information Processing Systems (NeurIPS)</i>, <i>33</i>.</span></li>
+<li><span id="curi2019adaptive">Curi, S., Levy, K., Jegelka, S., Krause, A., &amp; others. (2020). Adaptive sampling for stochastic risk-averse learning. <i>Neural Information Processing Systems (NeurIPS)</i>, <i>33</i>.</span></li>
+<li><span id="curi2020structured">Curi, S., Melchior, S., Berkenkamp, F., &amp; Krause, A. (2020). Structured Variational Inference in Partially Observable Unstable Gaussian Process State Space Models. <i>Learning for Dynamics and Control (L4DC)</i>, 147–157.</span></li>
+<li><span id="curi2019adaptivf">Curi, S., Levy, K. Y., &amp; Krause, A. (2019). Adaptive Input Estimation in Linear Dynamical Systems with Applications to Learning-from-Observations. <i>2019 IEEE 58th Conference on Decision and Control (CDC)</i>, 4115–4120.</span></li>
+<li><span id="borsos2019online">Borsos, Z., Curi, S., Levy, K. Y., &amp; Krause, A. (2019). Online variance reduction with mixtures. <i>International Conference on Machine Learning (ICML)</i>, 705–714.</span></li>
+<li><span id="fiducioso2019safe">Fiducioso, M., Curi, S., Schumacher, B., Gwerder, M., &amp; Krause, A. (2019). Safe contextual Bayesian optimization for sustainable room temperature PID control tuning. <i>International Joint Conference on Artificial Intelligence, (IJCAI-19)</i>, 5850–5856.</span></li>
+<li><span id="curi2017control">Curi, S., Groß, D., &amp; Dörfler, F. (2017). Control of low-inertia power grids: A model reduction approach. <i>2017 IEEE 56th Annual Conference on Decision and Control (CDC)</i>, 5708–5713.</span></li>
+<li><span id="bright2016analytical">Bright, L. Z., Handley, M., Chien, I., Curi, S., Brownworth, L. A., D’hers, S., Bernier, U. R., Gurman, P., &amp; Elman, N. M. (2016). Analytical models integrated with satellite images for optimized pest management. <i>Precision Agriculture</i>, <i>17</i>(5), 628–636.</span></li>
+<li><span id="curi2014autonomous">Curi, S., Mas, I., &amp; Pena, R. S. (2014). Autonomous flight of a commercial quadrotor. <i>IEEE Latin America Transactions</i>, <i>12</i>(5), 853–858.</span></li>
+<li><span id="chi2014rapid">Chi, A., Curi, S., Clayton, K., Luciano, D., Klauber, K., Alexander-Katz, A., D’hers, S., &amp; Elman, N. M. (2014). Rapid Reconstitution Packages (RRPs) implemented by integration of computational fluid dynamics (CFD) and 3D printed microfluidics. <i>Drug Delivery and Translational Research</i>, <i>4</i>(4), 320–333.</span></li></ol>
+
+:ET

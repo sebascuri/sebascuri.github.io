@@ -1,0 +1,28 @@
+I"<p>Usually, just pushing the master branch to the github.io is enough. 
+However, I use a webpage with some plug-ins that do not run on the github server. 
+Hence, I build the website locally on a different branch and the push the built website to the master branch.</p>
+
+<h3 id="step-1-make-sure-you-are-on-the-source-branch">Step 1) Make sure you are on the source branch.</h3>
+
+<p>Clone <a href="https://github.com/sebascuri.github.io">this repository</a>.</p>
+
+<p>Checkout remote branch.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout <span class="nt">--track</span> origin/source
+</code></pre></div></div>
+
+<h3 id="step-2-build-webpage-and-check-that-it-works">Step 2) Build webpage and check that it works.</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll build 
+bundle <span class="nb">exec </span>jekyll serve  
+</code></pre></div></div>
+
+<h3 id="step-3-push-your-new-webpage">Step 3) Push your new webpage.</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git branch <span class="nt">-D</span> master
+git checkout <span class="nt">-b</span> master
+git filter-branch <span class="nt">--subdirectory-filter</span> _site/ <span class="nt">-f</span>
+git checkout <span class="nb">source
+</span>git add _site/ 
+git commit <span class="nt">-m</span> <span class="s2">"Add compiled site."</span>
+git push <span class="nt">--all</span> origin
+</code></pre></div></div>
+:ET

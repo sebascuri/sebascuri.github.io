@@ -1,0 +1,18 @@
+I"�	<p>Hi! 
+I’m Sebastian Curi, I’m a Ph.D. student at ETH Zurich, under the supervision of Andreas Krause. 
+Currently, I’m doing an internship at Google, under the supervision of Gabriel Dulac-Arnold and Marcin Andrychowicz. 
+Previously, I did a stay at Gergely’s Neu Lab in Universtat Pompeu Fabra.</p>
+
+<p>I’m interested in the intersection between theory and practice of Reinforcement Learning/Control Systems. In particular, I focus on how to bring these algorithms into practical methods. I also care about the robustness, safety, sample-efficiency, and risk-aversity (to name some aspects) of data-driven decision-making.</p>
+
+<h2 id="my-publications">My Publications</h2>
+
+<ol class="bibliography"><li><span id="chua2018PETS">Chua, K., Calandra, R., McAllister, R., &amp; Levine, S. (2018). Deep reinforcement learning in a handful of trials using probabilistic dynamics models. <i>Neural Information Processing Systems (NeurIPS)</i>, 4754–4765.</span></li>
+<li><span id="curi2020HUCRL">Curi, S., Berkenkamp, F., &amp; Krause, A. (2020). Efficient Model-Based Reinforcement Learning through Optimistic Policy Search and Planning. <i>Neural Information Processing Systems (NeurIPS)</i>, <i>33</i>.</span></li>
+<li><span id="pinto2017RARL">Pinto, L., Davidson, J., Sukthankar, R., &amp; Gupta, A. (2017). Robust adversarial reinforcement learning. <i>International Conference on Machine Learning</i>, 2817–2826.</span></li>
+<li><span id="vinitsky2020RAP">Vinitsky, E., Du, Y., Parvate, K., Jang, K., Abbeel, P., &amp; Bayen, A. (2020). Robust Reinforcement Learning using Adversarial Populations. <i>ArXiv Preprint ArXiv:2008.01825</i>.</span></li>
+<li><span id="tobin2017DR">Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., &amp; Abbeel, P. (2017). Domain randomization for transferring deep neural networks from simulation to the real world. <i>International Conference on Intelligent Robots and Systems (IROS)</i>, 23–30.</span></li>
+<li><span id="rajeswaran2016EPOPT">Rajeswaran, A., Ghotra, S., Ravindran, B., &amp; Levine, S. (2016). EPOpt: Learning Robust Neural Network Policies Using Model Ensembles. <i>International Conference on Learning Representations, (ICLR)</i>.</span></li>
+<li><span id="curi2021RHUCRL">Curi, S., Bogunovic, I., &amp; Krause, A. (2021). Combining Pessimism with Optimism for Robust and Efficient Model-Based Deep Reinforcement Learning. <i>ArXiv Preprint ArXiv:2103.10369</i>.</span></li></ol>
+
+:ET

@@ -1,0 +1,13 @@
+I"�<p>Hi! 
+I’m Sebastian Curi, I’m a Ph.D. student at ETH Zurich, under the supervision of Andreas Krause. 
+Currently, I’m doing an internship at Google, under the supervision of Gabriel Dulac-Arnold and Marcin Andrychowicz. 
+Previously, I did a stay at Gergely’s Neu Lab in Universtat Pompeu Fabra.</p>
+
+<p>I’m interested in the intersection between theory and practice of Reinforcement Learning/Control Systems. In particular, I focus on how to bring these algorithms into practical methods. I also care about the robustness, safety, sample-efficiency, and risk-aversity (to name some aspects) of data-driven decision-making.</p>
+
+<h2 id="my-publications">My Publications</h2>
+
+<ol class="bibliography"><li><span id="curi2020HUCRL">Curi, S., Berkenkamp, F., &amp; Krause, A. (2020). Efficient Model-Based Reinforcement Learning through Optimistic Policy Search and Planning. <i>Neural Information Processing Systems (NeurIPS)</i>, <i>33</i>.</span></li>
+<li><span id="curi2021RHUCRL">Curi, S., Bogunovic, I., &amp; Krause, A. (2021). Combining Pessimism with Optimism for Robust and Efficient Model-Based Deep Reinforcement Learning. <i>ArXiv Preprint ArXiv:2103.10369</i>.</span></li></ol>
+
+:ET
